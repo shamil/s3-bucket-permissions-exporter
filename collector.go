@@ -107,6 +107,7 @@ func (c *Collector) scrape(ch chan<- prometheus.Metric) {
 	if err != nil {
 		log.With("err", err).Errorf("failed describing TrustedAdbisor check")
 		scrapeError.Set(1)
+		return
 	}
 
 	for _, d := range result.FlaggedResources {
@@ -116,7 +117,6 @@ func (c *Collector) scrape(ch chan<- prometheus.Metric) {
 	}
 
 	if time.Now().After(c.nextRefreshTime) {
-		log.Info("refreshing TrustedAdvisor check...")
 		result, err := c.awsSupport.RefreshtS3BucketPermissionsCheck()
 
 		if err != nil {
@@ -125,6 +125,7 @@ func (c *Collector) scrape(ch chan<- prometheus.Metric) {
 		}
 
 		c.nextRefreshTime = time.Now().Add(time.Duration(*result.MillisUntilNextRefreshable) * time.Millisecond)
+		log.Infof("refreshed TrustedAdvisor check, next refresh after %v", c.nextRefreshTime.Format("2 Jan 2006 15:04:05"))
 	}
 }
 
