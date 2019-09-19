@@ -37,7 +37,6 @@ var (
 type Collector struct {
 	awsSupport *aws_support.AwsSupport
 
-	lastResult      *support.TrustedAdvisorCheckResult
 	nextRefreshTime time.Time
 	mutex           sync.Mutex
 }
