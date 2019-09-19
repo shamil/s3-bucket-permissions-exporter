@@ -13,5 +13,7 @@ RUN promu build
 FROM busybox
 LABEL maintainer "Alex Simenduev <shamil.si@gmail.com>"
 
-COPY --from=builder /src/s3-bucket-permissions-exporter/s3-bucket-permissions-exporter /usr/local/bin/
 ENTRYPOINT ["s3-bucket-permissions-exporter"]
+
+COPY --from=builder /etc/ssl/certs /etc/ssl/certs
+COPY --from=builder /src/s3-bucket-permissions-exporter/s3-bucket-permissions-exporter /usr/local/bin/
