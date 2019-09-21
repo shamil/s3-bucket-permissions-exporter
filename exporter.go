@@ -10,18 +10,21 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
+const namespace = "s3_bucket_permissions"
+
+var (
+	listenAddress  = kingpin.Flag("web.listen-address", "Address to listen on for web interface and telemetry.").Short('l').Default(":9199").String()
+	metricsPath    = kingpin.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").String()
+	ignoredBuckets = kingpin.Flag("collector.ignored-buckets", "Regexp of buckets to ignore from collecting.").Default("^$").String()
+)
+
 func init() {
-	prometheus.MustRegister(version.NewCollector("burrow_exporter"))
+	prometheus.MustRegister(version.NewCollector(namespace))
 }
 
 func main() {
-	var (
-		listenAddress = kingpin.Flag("web.listen-address", "Address to listen on for web interface and telemetry.").Short('l').Default(":9199").String()
-		metricsPath   = kingpin.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").String()
-	)
-
 	log.AddFlags(kingpin.CommandLine)
-	kingpin.Version(version.Print("burrow_exporter"))
+	kingpin.Version(version.Print("s3-bucket-permissions-exporter"))
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
 

@@ -13,13 +13,12 @@ Flags:
                           Address to listen on for web interface and telemetry.
       --web.telemetry-path="/metrics"
                           Path under which to expose metrics.
-      --log.level="info"  Only log messages with the given severity or above. Valid levels:
-                          [debug, info, warn, error, fatal]
+      --collector.ignored-buckets="^$"
+                          Regexp of buckets to ignore from collecting.
+      --log.level="info"  Only log messages with the given severity or above. Valid levels: [debug, info, warn, error, fatal]
       --log.format="logger:stderr"
-                          Set the log target and format. Example:
-                          "logger:syslog?appname=bob&local=7" or "logger:stdout?json=true"
+                          Set the log target and format. Example: "logger:syslog?appname=bob&local=7" or "logger:stdout?json=true"
       --version           Show application version.
-
 ```
 
 ## Run with Docker

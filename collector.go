@@ -1,6 +1,7 @@
 package main
 
 import (
+	"regexp"
 	"sync"
 	"time"
 
@@ -10,8 +11,6 @@ import (
 	"github.com/shamil/s3-bucket-permissions-exporter/aws_support"
 )
 
-const namespace = "s3_bucket_permissions"
-
 var (
 	desc = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, "", "status"),
@@ -20,10 +19,10 @@ var (
 		nil,
 	)
 
-	scrapeError = prometheus.NewGauge(prometheus.GaugeOpts{
+	scrapeErrors = prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: namespace,
-		Name:      "last_scrape_error",
-		Help:      "Whether the last scrape of metrics from TrustedAdvisor resulted in an error (1 for error, 0 for success).",
+		Name:      "scrape_errors",
+		Help:      "Total number of scrape checks from TrustedAdvisor which resulted in an error.",
 	})
 
 	permissionStatus = map[string]float64{
@@ -35,17 +34,18 @@ var (
 
 // Collector collects data from TrustedAdvisor check
 type Collector struct {
-	awsSupport *aws_support.AwsSupport
-
-	nextRefreshTime time.Time
-	mutex           sync.Mutex
+	awsSupport            *aws_support.AwsSupport
+	ignoredBucketsPattern *regexp.Regexp
+	mutex                 sync.Mutex
+	nextRefreshTime       time.Time
 }
 
 // NewCollector creates a new instance of Collector with some defaults
 func NewCollector() *Collector {
 	return &Collector{
-		awsSupport:      aws_support.New(),
-		nextRefreshTime: time.Now(),
+		awsSupport:            aws_support.New(),
+		ignoredBucketsPattern: regexp.MustCompile(*ignoredBuckets),
+		nextRefreshTime:       time.Now(),
 	}
 }
 
@@ -101,16 +101,21 @@ func (c *Collector) processCheckDetail(detail *support.TrustedAdvisorResourceDet
 }
 
 func (c *Collector) scrape(ch chan<- prometheus.Metric) {
-	scrapeError.Set(0)
-
 	result, err := c.awsSupport.DescribeS3BucketPermissionsCheck()
 	if err != nil {
 		log.With("err", err).Errorf("failed describing TrustedAdbisor check")
-		scrapeError.Set(1)
+		scrapeErrors.Inc()
 		return
 	}
 
 	for _, d := range result.FlaggedResources {
+		bucket := *d.Metadata[2]
+
+		if c.ignoredBucketsPattern.MatchString(bucket) {
+			log.Debugf("ignoring bucket: %s", bucket)
+			continue
+		}
+
 		for _, m := range c.processCheckDetail(d) {
 			ch <- m
 		}
@@ -125,7 +130,7 @@ func (c *Collector) scrape(ch chan<- prometheus.Metric) {
 		}
 
 		c.nextRefreshTime = time.Now().Add(time.Duration(*result.MillisUntilNextRefreshable) * time.Millisecond)
-		log.Infof("refreshed TrustedAdvisor check, next refresh after %v", c.nextRefreshTime.Format("2 Jan 2006 15:04:05"))
+		log.Infof("refreshed TrustedAdvisor check, next refresh after '%v'", c.nextRefreshTime.Format("2 Jan 2006 15:04:05"))
 	}
 }
 
@@ -146,5 +151,5 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 
 	log.Info("scraping TrustedAdvisor...")
 	c.scrape(ch)
-	ch <- scrapeError
+	ch <- scrapeErrors
 }
