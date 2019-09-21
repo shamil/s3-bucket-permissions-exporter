@@ -24,7 +24,7 @@ Flags:
 ## Run with Docker
 
 ```shell
-docker run -p 8199:8199 simenduev/s3-bucket-permissions-exporter
+docker run -p 9199:9199 simenduev/s3-bucket-permissions-exporter
 ```
 
 ## AWS IAM Policy
