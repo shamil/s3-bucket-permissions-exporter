@@ -7,6 +7,6 @@ require (
 	github.com/aws/aws-sdk-go v1.26.8
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/prometheus/client_golang v1.6.0
-	github.com/prometheus/common v0.9.1
+	github.com/prometheus/common v0.10.0
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
