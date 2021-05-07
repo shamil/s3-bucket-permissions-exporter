@@ -3,8 +3,13 @@ module github.com/shamil/s3-bucket-permissions-exporter
 go 1.13
 
 require (
-	github.com/aws/aws-sdk-go v1.37.21
+	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
+	github.com/aws/aws-sdk-go v1.38.36
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golangci/golangci-lint v1.39.0
 	github.com/prometheus/client_golang v1.10.0
 	github.com/prometheus/common v0.23.0
+	github.com/prometheus/promu v0.12.0
+	golang.org/x/sys v0.0.0-20210507161434-a76c4d0a0096 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )

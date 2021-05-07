@@ -146,7 +146,7 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 
 	defer func() {
 		c.mutex.Unlock()
-		log.Infof("finished scraping TrustedAdvisor, took %v.", time.Now().Sub(start))
+		log.Infof("finished scraping TrustedAdvisor, took %v.", time.Since(start))
 	}()
 
 	log.Info("scraping TrustedAdvisor...")

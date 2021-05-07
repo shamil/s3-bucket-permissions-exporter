@@ -1,6 +1,6 @@
 go:
   cgo: false
-  version: 1.13
+  version: 1.16
 
 repository:
   path: github.com/shamil/s3-bucket-permissions-exporter
