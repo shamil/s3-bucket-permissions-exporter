@@ -8,7 +8,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golangci/golangci-lint v1.39.0
 	github.com/prometheus/client_golang v1.10.0
-	github.com/prometheus/common v0.23.0
+	github.com/prometheus/common v0.25.0
 	github.com/prometheus/promu v0.12.0
 	golang.org/x/sys v0.0.0-20210507161434-a76c4d0a0096 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
